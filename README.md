@@ -1,5 +1,9 @@
 # WhatsApp-Tech-Support-with-Strapi-LangChain.js-and-GPT-4o
 navigate into your working directory and run the following commands to run the App. Don't forget to also add your openAI API key in the .env file.
+
+```bash
+npm install
+```
 ```bash
 node .\whatsapp_integration.mjs
 ```
