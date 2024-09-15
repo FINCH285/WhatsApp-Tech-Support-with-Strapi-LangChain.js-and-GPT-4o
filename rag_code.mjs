@@ -45,7 +45,7 @@ async function downloadDocsWithCache(url) {
 
   console.log(`Downloading file: ${url}`);
   const response = await axios({
-    url: `http://localhost:30080${url}`,
+    url: `http://localhost:1337${url}`,
     method: 'GET',
     responseType: 'stream',
   });
