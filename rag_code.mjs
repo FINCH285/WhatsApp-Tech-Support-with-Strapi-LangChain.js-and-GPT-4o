@@ -65,7 +65,7 @@ async function downloadDocsWithCache(url) {
 
 // Function to fetch document URLs from Strapi
 async function fetchDocumentUrlsFromStrapi() {
-  const strapiEndpoint = 'http://localhost:30080/api/tech-support-knowledgebases?populate=documents';
+  const strapiEndpoint = 'http://localhost:1337/api/tech-support-knowledgebases?populate=documents';
   try {
     const response = await axios.get(strapiEndpoint);
     const documentUrls = response.data.data.flatMap(item => 
