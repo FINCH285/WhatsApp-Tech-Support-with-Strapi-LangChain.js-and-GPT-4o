@@ -44,39 +44,53 @@ async function downloadDocsWithCache(url) {
   }
 
   console.log(`Downloading file: ${url}`);
-  const response = await axios({
-    url: `http://localhost:1337${url}`,
-    method: 'GET',
-    responseType: 'stream',
-  });
-
-  const writer = fs.createWriteStream(cacheFilePath);
-  response.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', () => {
-      resolve(cacheFilePath);
+  const fullUrl = url.startsWith('/') ? `http://localhost:30080${url}` : url;
+  try {
+    const response = await axios({
+      url: fullUrl,
+      method: 'GET',
+      responseType: 'stream',
     });
-    writer.on('error', reject);
-  });
+
+    const writer = fs.createWriteStream(cacheFilePath);
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', () => {
+        console.log(`File downloaded and cached: ${cacheFilePath}`);
+        resolve(cacheFilePath);
+      });
+      writer.on('error', (err) => {
+        console.error(`Error writing file: ${err}`);
+        reject(err);
+      });
+    });
+  } catch (error) {
+    console.error(`Error downloading file from ${fullUrl}:`, error);
+    throw error;
+  }
 }
-
-
 
 // Function to fetch document URLs from Strapi
 async function fetchDocumentUrlsFromStrapi() {
-  const strapiEndpoint = 'http://localhost:1337/api/tech-support-knowledgebases?populate=documents';
+  const strapiEndpoint = 'http://localhost:30080/api/tech-support-knowledgebases?populate=documents';
   try {
     const response = await axios.get(strapiEndpoint);
-    const documentUrls = response.data.data.flatMap(item => 
-      item.attributes.documents.data.map(doc => doc.attributes.url)
-    );
+    const documentUrls = response.data.data.flatMap(item => {
+      // Check if documents exist
+      if (item.documents && Array.isArray(item.documents)) {
+        return item.documents.map(doc => doc.url);
+      }
+      return []; // Return an empty array if no documents are found
+    });
+    console.log('Fetched document URLs:', documentUrls); // For debugging
     return documentUrls;
   } catch (error) {
     console.error('Error fetching document URLs from Strapi:', error);
     throw error;
   }
 }
+
 
 async function loadAndSplitChunks({ folderPath, chunkSize, chunkOverlap }) {
   const documents = [];
