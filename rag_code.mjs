@@ -44,7 +44,7 @@ async function downloadDocsWithCache(url) {
   }
 
   console.log(`Downloading file: ${url}`);
-  const fullUrl = url.startsWith('/') ? `http://localhost:30080${url}` : url;
+  const fullUrl = url.startsWith('/') ? `http://localhost:1337${url}` : url;
   try {
     const response = await axios({
       url: fullUrl,
@@ -73,7 +73,7 @@ async function downloadDocsWithCache(url) {
 
 // Function to fetch document URLs from Strapi
 async function fetchDocumentUrlsFromStrapi() {
-  const strapiEndpoint = 'http://localhost:30080/api/tech-support-knowledgebases?populate=documents';
+  const strapiEndpoint = 'http://localhost:1337/api/tech-support-knowledgebases?populate=documents';
   try {
     const response = await axios.get(strapiEndpoint);
     const documentUrls = response.data.data.flatMap(item => {
